@@ -10,7 +10,7 @@
 
 {#if user} 
 	<p>Hello {user.display_name}</p>
+	<LogoutButton />
 {/if}
 
-<LogoutButton />
 <slot />

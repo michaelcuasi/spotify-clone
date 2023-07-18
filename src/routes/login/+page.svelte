@@ -1,2 +1,7 @@
+<script>
+  import { Button } from "$components";
+ 
+</script>
 
-<a href="/api/auth/login">login</a>
+<Button element="a" variant="outline">Login</Button>
+<Button element="button">Login</Button>
