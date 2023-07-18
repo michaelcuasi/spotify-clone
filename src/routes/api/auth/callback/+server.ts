@@ -5,7 +5,6 @@ import { SPOTIFY_APP_CLIENT_ID, SPOTIFY_APP_CLIENT_SECRET, BASE_URL } from '$env
 export const GET: RequestHandler = async ({ url, cookies, fetch }) => {
 	const code = url.searchParams.get('code') || null;
 	const state = url.searchParams.get('state') || null;
-
 	const storedState = cookies.get('spotify_auth_state') || null;
 	const storedChallengeVerifier = cookies.get('spotify_auth_challenge_verifier') || null;
 
@@ -36,5 +35,6 @@ export const GET: RequestHandler = async ({ url, cookies, fetch }) => {
 	cookies.delete('spotify_auth_challenge_verifier');
 	cookies.set('refresh_token', responseJSON.refresh_token, { path: '/' });
 	cookies.set('access_token', responseJSON.access_token, { path: '/' });
+	// return
 	throw redirect(303, '/');
 };
