@@ -1,10 +1,8 @@
 <script lang="ts">
+	import { Navigation, Header } from '$components';
 	import 'modern-normalize/modern-normalize.css';
 	import '../styles/main.scss';
 	import type { LayoutData } from './$types';
-	import { Navigation, Header } from '$components';
-
-	export let data: LayoutData;
 
 	let topbar: HTMLElement;
 	let scrollY: number;
@@ -13,7 +11,9 @@
 	$: if (topbar) {
 		headerOpacity = scrollY / topbar.offsetHeight < 1 ? scrollY / topbar.offsetHeight : 1;
 	}
-	// $: console.log(topbar && scrollY / topbar.offsetHeight);
+
+	export let data: LayoutData;
+
 	$: user = data.user;
 </script>
 
@@ -25,7 +25,6 @@
 			<Navigation desktop={true} />
 		</div>
 	{/if}
-
 	<div id="content">
 		<div id="topbar" bind:this={topbar}>
 			<div
@@ -54,7 +53,6 @@
 				align-items: center;
 				width: 100%;
 				z-index: 100;
-				border: 1px solid orange;
 				.topbar-bg {
 					position: absolute;
 					width: 100%;
@@ -62,7 +60,6 @@
 					top: 0;
 					left: 0;
 					z-index: -1;
-					// border: 1px solid pink;
 				}
 				@include breakpoint.up('md') {
 					padding: 0 30px;
@@ -71,7 +68,6 @@
 			}
 			main#main-content {
 				padding: 30px 15px 60px;
-				// border: 1px solid red;
 				@include breakpoint.up('md') {
 					padding: 30px 30px 60px;
 				}
