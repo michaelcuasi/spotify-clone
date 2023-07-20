@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { Home, Search, ListMusic, type Icon } from 'lucide-svelte';
-	import type { ComponentType } from 'svelte';
+	import { tick, type ComponentType } from 'svelte';
 	import logo from '$assets/Spotify_Logo_RGB_White.png';
 	import { page } from '$app/stores';
 	import { fade } from 'svelte/transition';
+	import { beforeNavigate } from '$app/navigation';
 
 	export let desktop: boolean;
 
@@ -11,6 +12,10 @@
 	$: isOpen = desktop || isMobileMenuOpen;
 
 	$: console.log('isOpen ===> ', isOpen);
+
+	let openMenuButton: HTMLButtonElement
+	let closeMenuButton: HTMLButtonElement
+	let lastFocusableElement: HTMLAnchorElement
 
 	const menuItems: { path: string; label: string; icon: ComponentType<Icon> }[] = [
 		{
@@ -30,13 +35,41 @@
 		}
 	];
 
-	const openMenu = () => {
+	const openMenu = async () => {
 		isMobileMenuOpen = true;
-		// console.log(isMobileMenuOpen);
+		await tick()
+		closeMenuButton.focus()
 	};
-	const closeMenu = () => {
+	const closeMenu = async () => {
 		isMobileMenuOpen = false;
+		await tick()
+		openMenuButton.focus()
 	};
+
+	const moveFocusToBottom = (e: KeyboardEvent) => {
+		if(desktop) return
+		if(e.key === "Tab" && e.shiftKey) {
+			e.preventDefault()
+			lastFocusableElement.focus()
+		}
+	}
+
+	const moveFocusToTop = (e: KeyboardEvent) => {
+		if(desktop) return
+		if(e.key === "Tab" && !e.shiftKey) {
+			e.preventDefault()
+			closeMenuButton.focus()
+		}
+	}
+
+	const handleEscape = (e: KeyboardEvent) => {
+		if(e.key === 'Escape')
+		closeMenu()
+	}
+
+	beforeNavigate(() => {
+		isMobileMenuOpen = false
+	})
 </script>
 
 <svelte:head>
@@ -51,31 +84,47 @@
 
 <div class="nav-content" class:desktop class:mobile={!desktop}>
 	{#if !desktop && isMobileMenuOpen}
-		<div class="overlay" on:click={closeMenu} transition:fade={{ duration: 200 }} />
+		<!-- svelte-ignore a11y-no-static-element-interactions -->
+		<div class="overlay" on:click={closeMenu} transition:fade={{ duration: 200 }} on:keyup={handleEscape}/>
 	{/if}
 	<nav aria-label="Main">
 		{#if !desktop}
-			<button on:click={openMenu}>Open</button>
+			<button bind:this={openMenuButton} on:click={openMenu} aria-expanded={isOpen}>Open</button>
 		{/if}
-		<div class="nav-content-inner" class:is-hidden={!isOpen}>
+		<!-- svelte-ignore a11y-no-static-element-interactions -->
+		<div 
+			class="nav-content-inner" class:is-hidden={!isOpen}  style:visibility={isOpen ? 'visible' : 'hidden'} on:keyup={handleEscape}>
 			{#if !desktop}
-				<button on:click={closeMenu}>Close</button>
+				<button bind:this={closeMenuButton} on:click={closeMenu} on:keydown={moveFocusToBottom}>Close</button>
 			{/if}
 			<img src={logo} class="logo" alt="Spotify" />
 			<ul>
-				{#each menuItems as item}
+				{#each menuItems as item, index}
+				{@const iconProps = {
+					focusable: 'false',
+					'aria-hidden': true,
+					color: "var(--text-color)",
+					size: 26,
+					strokeWidth: 2
+				}}
 					<li class:active={item.path === $page.url.pathname}>
+						{#if menuItems.length === index + 1}
+							<a bind:this={lastFocusableElement} href={item.path} on:keydown={moveFocusToTop}>
+								<svelte:component
+									this={item.icon}
+									{...iconProps}
+								/>
+								{item.label}
+							</a>
+						{:else}
 						<a href={item.path}>
 							<svelte:component
-								this={item.icon}
-								focusable="false"
-								aria-hidden="true"
-								color="var(--text-color)"
-								size={26}
-								strokeWidth={2}
+								this={item.icon} 
+								{...iconProps}
 							/>
 							{item.label}
 						</a>
+						{/if}
 					</li>
 				{/each}
 			</ul>
@@ -157,6 +206,7 @@
 			z-index: 100;
 			transition: transform 200ms, opacity 200ms;
 			&.is-hidden {
+				transition: transform 200ms, opacity 200ms, visibility 200ms;
 				transform: translateX(-100%);
 				opacity: 0;
 			}
