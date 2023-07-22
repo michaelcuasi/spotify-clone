@@ -17,7 +17,6 @@
 	</div>
 	<div class="right">
 		<div id="profile-button">
-			s
 			<button
 				class="profile-button"
 				use:tippy={{
