@@ -1,4 +1,4 @@
-import type { RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
 import { SPOTIFY_BASE_URL } from '$env/static/private';
 import { error, json } from '@sveltejs/kit';
 
