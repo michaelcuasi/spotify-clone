@@ -2,7 +2,10 @@ import { error, redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { SPOTIFY_APP_CLIENT_ID, SPOTIFY_APP_CLIENT_SECRET, BASE_URL } from '$env/static/private';
 
+
 export const GET: RequestHandler = async ({ url, cookies, fetch }) => {
+	// console.log("URL ===> ", url)
+
 	const code = url.searchParams.get('code') || null;
 	const state = url.searchParams.get('state') || null;
 	const storedState = cookies.get('spotify_auth_state') || null;

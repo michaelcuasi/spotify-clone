@@ -7,6 +7,7 @@ export default async function fetchRefresh(
 ) {
 	const req = fetch(path);
 	if (!browser) return req;
+
 	const res = await req;
 	if (res.status === 401) {
 		if (!window.refreshPromise) {

@@ -26,6 +26,7 @@
 			});
 		}
 		data.homeCategories.forEach((category, index) => {
+			// console.log("CATEGORY PLAYLIST ==>>", data.categoriesPlaylist)
 			const categoryPlaylist = data.categoriesPlaylist[index];
 			if (categoryPlaylist) {
 				sections.push({

@@ -8,8 +8,8 @@
 	import { beforeNavigate } from '$app/navigation';
 
 	export let desktop: boolean;
-
 	let isMobileMenuOpen = false;
+	
 	$: isOpen = desktop || isMobileMenuOpen;
 
 	let openMenuButton: IconButton;
